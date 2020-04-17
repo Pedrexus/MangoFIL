@@ -1,3 +1,5 @@
+import mango
+
 from numpy import uint8
 from PIL.Image import Image
 
@@ -9,10 +11,11 @@ def create_io():
 
     return io
 
-def test_create_image_data_generator():
+def test_create_image_data_generator(benchmark):
     io = create_io()
 
     imggen = io.gen(consider_antracnosis='only', consider_collapse_level=False)
+    imggen = benchmark(list, imggen)
     _path, _class = next(imggen)
 
     assert type(_path) == str
@@ -41,7 +44,8 @@ def test_visualize_resized_image():
 def test_load_image_data_parallel(benchmark):
     io = create_io()
 
-    x_data, y_data = benchmark(io.load)(resize=.1, parallel=True)
+    kwargs = dict(consider_antracnosis='only', consider_collapse_level=False)
+    x_data, y_data = benchmark(io.load, resize=.1, parallel=True, **kwargs)
 
     assert x_data.shape == (470, 491, 276, 3)
     assert x_data.dtype == uint8
@@ -52,7 +56,8 @@ def test_load_image_data_parallel(benchmark):
 def test_load_image_data_single_thread(benchmark):
     io = create_io()
 
-    x_data, y_data = benchmark(io.load)(resize=28, parallel=False)
+    kwargs = dict(consider_antracnosis='only', consider_collapse_level=False)
+    x_data, y_data = benchmark(io.load, resize=28, parallel=False)
 
     assert x_data.shape == (470, 28, 28, 3)
     assert x_data.dtype == uint8

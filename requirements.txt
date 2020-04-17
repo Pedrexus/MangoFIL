@@ -1,5 +1,11 @@
 numpy
+dask[complete]
 pillow
+tqdm
 
 pytest
 pytest-benchmark
+
+tensorflow
+scikit-learn
+sklearn
