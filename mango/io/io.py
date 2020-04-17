@@ -67,8 +67,8 @@ class IO:
 
         if parallel:
             lazy_stack = stack([
-                from_delayed(delayed(self.open_image)(path, resize),
-                             shape=self.shape, dtype=self.dtype)
+                from_delayed(
+                    delayed(self.open_image)(path, resize), shape=self.shape, dtype=self.dtype)
                 for path, _ in dataarr
             ])
             x_data = lazy_stack.compute()
@@ -83,7 +83,8 @@ class IO:
                 x_data[i] = img
 
         try:
-            y_data = dataarr[:, :, 1].astype(np.uint8).mean(axis=1).astype(np.uint8)
+            y_data = dataarr[:, :, 1].astype(
+                np.uint8).mean(axis=1).astype(np.uint8)
         except IndexError:
             y_data = dataarr[:, 1].astype(np.uint8)
 
