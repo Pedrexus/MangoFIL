@@ -36,6 +36,7 @@ class IO:
                     yield os.path.abspath(filepath), fileclass
 
     @staticmethod
+    @lru_cache(maxsize=1024)
     def open_image(path, resize: float = 1):
         img = Image.open(path)
 
@@ -50,7 +51,7 @@ class IO:
         else:
             raise ValueError(f"{resize} is not a valid resize factor")
 
-    @lru_cache(maxsize=16)
+    @lru_cache(maxsize=1024)
     def image(self, n, *args, **kwargs):
         generator = self.gen()
 
@@ -62,7 +63,7 @@ class IO:
         return self.open_image(imgpath, *args, **kwargs)
 
     def load(self, resize=1, parallel=False, *args, **kwargs):
-        dataarr = np.array(self.gen(*args, **kwargs))
+        dataarr = np.array(list(self.gen(*args, **kwargs)))
 
         if parallel:
             lazy_stack = stack([

@@ -56,7 +56,7 @@ class Trainer:
             train_gen = (x_train, y_train)
 
         result = model.fit(
-            *train_gen, validation_data=(x_valid, y_valid), *args, **kwargs
+            *train_gen, *args, validation_data=(x_valid, y_valid), random_state=self.random_state, **kwargs
         )
 
         return result
