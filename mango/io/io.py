@@ -1,5 +1,5 @@
 import os
-from functools import cached_property, lru_cache
+from functools import lru_cache
 
 from PIL import Image
 import numpy as np
@@ -88,10 +88,10 @@ class IO:
 
         return x_data, y_data
 
-    @cached_property
+    @property
     def shape(self):
         return np.array(self.image(0)).shape
 
-    @cached_property
+    @property
     def dtype(self):
         return np.array(self.image(0)).dtype
