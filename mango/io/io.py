@@ -69,7 +69,11 @@ class IO:
         dataarr = np.array(list(self.gen(*args, **kwargs)))
 
         if parallel:
-            lazy_stack = stack([from_delayed(delayed(self.open_image_array)(path, resize), shape=self.shape, dtype=self.dtype)for path, _ in dataarr])
+            lazy_stack = stack([
+                from_delayed(
+                    delayed(self.open_image_array)(path, resize), shape=self.shape, dtype=self.dtype)
+                for path, _ in dataarr
+            ])
             x_data = lazy_stack.compute()
         else:
             raise NotImplementedError
