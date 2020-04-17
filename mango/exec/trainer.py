@@ -39,7 +39,7 @@ class Trainer:
 
         return x_train, y_train, x_valid, y_valid, x_test, y_test
 
-    def train(self, augmentation, loss, metrics, optimizer: str | tf.keras.optimizers.Optimizer, , *args, **kwargs):
+    def train(self, augmentation, loss, metrics, optimizer: str | tf.keras.optimizers.Optimizer, *args, **kwargs):
         x_train, y_train, x_valid, y_valid, x_test, y_test = self.preprocessing()
 
         model = self.model
