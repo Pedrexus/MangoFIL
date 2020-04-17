@@ -21,6 +21,7 @@ def test_training_model():
     ) # normalize data
 
     result = trainer.train(
+        loss='sparse_categorical_crossentropy'
         metrics=['accuracy', 'binary_f1_score'], 
         optimizer=Adam(lr=1e-3),
         shuffle=True, epochs=1, verbose=2, batch_size=256, random_state=123,
