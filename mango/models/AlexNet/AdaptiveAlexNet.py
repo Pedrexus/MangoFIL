@@ -25,6 +25,5 @@ class AdaptiveAlexNet(AlexNet, Registry):
         self.conv4 = Conv2D(_n(384, 2), kernel_size=_s(3, 3), strides=_s(1, 1), activation=tf.nn.relu, padding='same')
         self.conv5 = Conv2D(_n(256, 2), kernel_size=_s(3, 3), strides=_s(1, 1), activation=tf.nn.relu, padding='same')
         self.pool5 = MaxPooling2D(pool_size=_s(3, 2), strides=_s(2, 2), padding='valid')
-        self.flatten = Flatten()
         self.dense1 = Dense(_n(4096, 2), activation=tf.nn.relu)
         self.dense2 = Dense(_n(4096, 2), activation=tf.nn.relu)

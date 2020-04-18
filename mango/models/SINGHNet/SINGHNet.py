@@ -35,22 +35,22 @@ class SINGHNet(BaseModel, Registry):
         self.flatten = Flatten()
         self.dense1 = Dense(512, activation=tf.nn.relu)
 
-    def call(self, inputs, training=False, *args, **kwargs):
+    def call(self, inputs, training=None, *args, **kwargs):
         x = self.conv1a(inputs)
         x = self.conv1b(x)
         x = self.pool1(x)
         if training:
-            x = self.drop1(x)
+            x = self.drop1(x, training)
         x = self.conv2a(x)
         x = self.conv2b(x)
         x = self.pool2(x)
         if training:
-            x = self.drop2(x)
+            x = self.drop2(x, training)
         x = self.conv3a(x)
         x = self.conv3b(x)
         x = self.pool3(x)
         if training:
-            x = self.drop3(x)
+            x = self.drop3(x, training)
         x = self.flatten(x)
         x = self.dense1(x)
         x = self.out(x)

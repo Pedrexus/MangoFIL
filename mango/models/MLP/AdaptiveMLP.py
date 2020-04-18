@@ -12,5 +12,4 @@ class AdaptiveMLP(MLP, Registry):
         super().__init__(n_classes, input_shape, *args, **kwargs)
         _n, _s = self.define_params()
 
-        self.flatten = Flatten(**self._)
         self.dense1 = Dense(_n(1024, 4), activation=tf.nn.sigmoid)
