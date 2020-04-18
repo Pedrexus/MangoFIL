@@ -2,6 +2,7 @@ numpy
 dask[complete]
 pillow
 tqdm
+easydict
 
 pytest
 pytest-benchmark
