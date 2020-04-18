@@ -2,7 +2,7 @@ from mango.models import get_model
 import mango
 
 def create_io():
-    root = '/content/drive/My Drive/Projetos/MangoFIL/data'
+    root = 'MangoFIL/data'
     exclude_dirs = ('FIL_NANDA', 'EXCLUDED', 'NPZ_FILES')
 
     io = mango.IO(root, exclude_dirs)

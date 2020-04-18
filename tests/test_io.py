@@ -4,7 +4,7 @@ from numpy import uint8
 from PIL.Image import Image
 
 def create_io():
-    root = '/content/drive/My Drive/Projetos/MangoFIL/data'
+    root = 'MangoFIL/data'
     exclude_dirs = ('FIL_NANDA', 'EXCLUDED', 'NPZ_FILES')
 
     io = mango.IO(root, exclude_dirs)

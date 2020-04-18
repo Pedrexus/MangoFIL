@@ -4,9 +4,13 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 
+from mango.utils import one_hot_encode
+
+
 class Trainer:
 
-    def __init__(self, x: array, y: array, model: tf.keras.Model, test_size: float, validation_size: float = 0, random_state: int = 123):
+    def __init__(self, x: array, y: array, model: tf.keras.Model, test_size: float, validation_size: float = 0,
+                 random_state: int = 123):
         self.x = x
         self.y = y
 
@@ -30,8 +34,11 @@ class Trainer:
         # gauss normalization
         x = (x - mean_vals) / std_val
 
+        # one-hot encoding
+        y = one_hot_encode(self.y)
+
         x, x_test, y, y_test = train_test_split(
-            x, self.y, stratify=self.y, test_size=self.test_size, random_state=self.random_state
+            x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
         )
         x_train, x_valid, y_train, y_valid = train_test_split(
             x, y, stratify=y, test_size=self.validation_size, random_state=self.random_state
@@ -56,14 +63,14 @@ class Trainer:
             train_gen = (x_train, y_train)
 
         result = model.fit(
-            *train_gen, *args, validation_data=(x_valid, y_valid), random_state=self.random_state, **kwargs
+            *train_gen, *args, validation_data=(x_valid, y_valid), **kwargs
         )
 
         return result
 
-    @property
     def gpu_info(self):
         device_name = tf.test.gpu_device_name()
         if device_name != '/device:GPU:0':
             print('GPU device not found')
-        print('Found GPU at: {}'.format(device_name))
+        else:
+            print('Found GPU at: {}'.format(device_name))

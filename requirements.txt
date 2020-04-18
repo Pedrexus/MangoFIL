@@ -7,5 +7,5 @@ pytest
 pytest-benchmark
 
 tensorflow
+tensorflow-addons
 scikit-learn
-sklearn
