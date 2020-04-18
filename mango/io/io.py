@@ -66,8 +66,9 @@ class IO:
         return self.open_image(imgpath, *args, **kwargs)
 
     def load(self, resize=1, parallel=False, n=None, **kwargs):
-        # TODO: use n to make it faster
         dataarr = np.array(list(self.gen(**kwargs)))
+        if n:
+            dataarr = dataarr[:n]
 
         if parallel:
             lazy_stack = stack([
