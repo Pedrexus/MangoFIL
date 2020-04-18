@@ -58,15 +58,17 @@ class Trainer:
 
         if augmentation:
             batch_size = augmentation.pop("batch_size", 32)
-            steps_per_epoch = max(len(x_train) // batch_size, 1)
-            # validation_steps = max(len(x_valid) // batch_size, 1)
+
+            steps_per_epoch = max(len(x_train) // batch_size, 2)
+            validation_steps = max(len(x_valid) // batch_size, 2)
 
             aug = ImageDataGenerator(**augmentation)
             train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
 
             result = model.fit(
-                train_gen, *args, validation_data=(x_valid, y_valid), **kwargs,
-                steps_per_epoch=steps_per_epoch,
+                train_gen, *args, steps_per_epoch=steps_per_epoch,
+                validation_data=(x_valid, y_valid), validation_steps=validation_steps,
+                **kwargs,
             )
         else:
             result = model.fit(x_train, y_train, *args, validation_data=(x_valid, y_valid), **kwargs)
