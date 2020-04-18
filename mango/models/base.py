@@ -10,13 +10,13 @@ class BaseModel(Model):
     N_CLASSES = None
     INPUT_SHAPE = ()
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes, input_shape):
         """base keras model for easy using of summary
 
         :param n_classes: number of distinct classes
         :param input_shape: tuple (x, y, z) of image shape
         """
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         self._n, self._shape = n_classes, input_shape
         self._ = dict(input_shape=input_shape, data_format='channels_last')
