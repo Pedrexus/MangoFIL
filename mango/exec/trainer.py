@@ -35,7 +35,7 @@ class Trainer:
         x = (x - mean_vals) / std_val
 
         # one-hot encoding
-        y = one_hot_encode(self.y)
+        y = one_hot_encode(self.y.reshape(-1, 1))
 
         x, x_test, y, y_test = train_test_split(
             x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
