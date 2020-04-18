@@ -1,11 +1,11 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten, Input
 
-from ..base import BaseModel
+from ..SINGHNet import SINGHNet
 from ..registry import Registry
 
 
-class AdaptiveSINGHNet(BaseModel, Registry):
+class AdaptiveSINGHNet(SINGHNet, Registry):
 
     def __init__(self, n_classes, input_shape, *args, **kwargs):
         """Original SINGHNet implementation from paper
