@@ -14,22 +14,24 @@ class SINGHNet(BaseModel, Registry):
         """Original SINGHNet implementation from paper
         Multilayer Convolution Neural Network for the Classification of Mango Leaves Infected by Anthracnose Disease
         by UDAY PRATAP SINGH et al.
+
+        This implementation uses padding='valid' and pool_strides=2 so that the number of params is reduced
         """
         super().__init__(n_classes, input_shape, *args, **kwargs)
 
-        self.conv1a = Conv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same', **self._)
-        self.conv1b = Conv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.pool1 = MaxPooling2D(pool_size=2, strides=1, padding='same')
+        self.conv1a = Conv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid', **self._)
+        self.conv1b = Conv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.pool1 = MaxPooling2D(pool_size=2, strides=2, padding='valid')
         self.drop1 = Dropout(.5)
 
-        self.conv2a = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.conv2b = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.pool2 = MaxPooling2D(pool_size=2, strides=1, padding='same')
+        self.conv2a = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv2b = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.pool2 = MaxPooling2D(pool_size=2, strides=2, padding='valid')
         self.drop2 = Dropout(.5)
 
-        self.conv3a = Conv2D(384, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.conv3b = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.pool3 = MaxPooling2D(pool_size=2, strides=1, padding='same')
+        self.conv3a = Conv2D(384, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv3b = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.pool3 = MaxPooling2D(pool_size=2, strides=2, padding='valid')
         self.drop3 = Dropout(.2)
 
         self.flatten = Flatten()
