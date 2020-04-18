@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, AveragePooling2D, Dense, Dropout, Flatten
+from tensorflow.keras.layers import Flatten, Dense
 
 from ..base import BaseModel
 from ..registry import Registry

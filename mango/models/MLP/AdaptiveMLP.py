@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense
 
 from .MLP import MLP
 from ..registry import Registry

@@ -2,7 +2,7 @@ from functools import lru_cache
 
 import tensorflow as tf
 from tensorflow.keras import Model
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten, Input
+from tensorflow.keras.layers import Input, Dense
 
 
 class BaseModel(Model):
@@ -10,21 +10,18 @@ class BaseModel(Model):
     N_CLASSES = None
     INPUT_SHAPE = ()
 
-    def __init__(self, n_classes, input_shape):
+    def __init__(self, n_classes, input_shape, *args, **kwargs):
         """base keras model for easy using of summary
 
         :param n_classes: number of distinct classes
         :param input_shape: tuple (x, y, z) of image shape
         """
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
         self._n, self._shape = n_classes, input_shape
         self._ = dict(input_shape=input_shape, data_format='channels_last')
 
         self.out = Dense(self._n, activation=tf.nn.softmax)
-
-    def __eq__(self, other):
-        return self.__dict__ == self.__dict__
 
     def define_params(self):
         """define params of adaptive version of model

@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten, Input
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense
 
 from .AlexNet import AlexNet
 from ..registry import Registry
