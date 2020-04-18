@@ -18,16 +18,16 @@ class AdaptiveSINGHNet(SINGHNet, Registry):
         # self.conv1a.filters = _n(self.conv1a.filters, 2)
         # self.conv1a.kernel_size = _s(self.conv1a.kernel_size, 2)
 
-        self.conv1a = Conv2D(_n(128, 2), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid', **self._)
-        self.conv1b = Conv2D(_n(128, 2), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv1a = Conv2D(_n(128, 4), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid', **self._)
+        self.conv1b = Conv2D(_n(128, 4), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
         self.pool1 = MaxPooling2D(pool_size=_s(2, 2), strides=2, padding='valid')
 
-        self.conv2a = Conv2D(_n(256, 4), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
-        self.conv2b = Conv2D(_n(256, 4), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv2a = Conv2D(_n(256, 8), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv2b = Conv2D(_n(256, 8), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
         self.pool2 = MaxPooling2D(pool_size=_s(2, 2), strides=2, padding='valid')
 
-        self.conv3a = Conv2D(_n(384, 6), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
-        self.conv3b = Conv2D(_n(256, 4), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv3a = Conv2D(_n(384, 12), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv3b = Conv2D(_n(256, 8), kernel_size=_s(3, 2), strides=1, activation=tf.nn.relu, padding='valid')
         self.pool3 = MaxPooling2D(pool_size=_s(2, 2), strides=2, padding='valid')
 
-        self.dense1 = Dense(_n(512, 8), activation=tf.nn.relu)
+        self.dense1 = Dense(_n(512, 16), activation=tf.nn.relu)
