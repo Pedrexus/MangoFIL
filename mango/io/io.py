@@ -65,8 +65,9 @@ class IO:
 
         return self.open_image(imgpath, *args, **kwargs)
 
-    def load(self, resize=1, parallel=False, *args, **kwargs):
-        dataarr = np.array(list(self.gen(*args, **kwargs)))
+    def load(self, resize=1, parallel=False, n=None, **kwargs):
+        # TODO: use n to make it faster
+        dataarr = np.array(list(self.gen(**kwargs)))
 
         if parallel:
             lazy_stack = stack([
@@ -76,7 +77,6 @@ class IO:
             ])
             x_data = lazy_stack.compute()
         else:
-            raise NotImplementedError
             X_path_arr = dataarr[..., 0]
             gen, count = (self.open_image(path, resize)
                           for path in tqdm(X_path_arr, ncols=80)), X_path_arr.shape[0]
