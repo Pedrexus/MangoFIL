@@ -21,7 +21,7 @@ class BaseModel(Model):
         self._n_classes, self._input_shape = n_classes, input_shape
         self._ = dict(input_shape=input_shape, data_format='channels_last')
 
-        self.out = Dense(self._n, activation=tf.nn.softmax)
+        self.out = Dense(n_classes, activation=tf.nn.softmax)
 
     def define_params(self):
         """define params of adaptive version of model
