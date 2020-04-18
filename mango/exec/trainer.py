@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 
-from mango.utils import one_hot_encode
+from ..helpers import one_hot_encode
 
 
 class Trainer:
