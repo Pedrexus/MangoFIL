@@ -54,7 +54,7 @@ class BaseModel(Model):
         return maxn, maxs
 
     def model(self):
-        x = Input(shape=self._shape)
+        x = Input(shape=self._input_shape)
         return Model(inputs=[x], outputs=self.call(x))
 
     def summary(self, *args, **kwargs):
