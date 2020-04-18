@@ -1,8 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, AveragePooling2D, Dense, Dropout, Flatten
 
-from mango.metrics import SparseCategoricalF1Score, SparseCategoricalTruePositives
-from mango.models.registry import Registry
+from .registry import Registry
 
 
 class LeNet5(tf.keras.Model, Registry):
@@ -35,11 +34,13 @@ if __name__ == '__main__':
     import numpy as np
     import tensorflow_addons as tfa
 
+
     def one_hot_encode(arr):
         from sklearn.preprocessing import OneHotEncoder
         enc = OneHotEncoder(handle_unknown='ignore')
         enc.fit(arr)
         return enc.transform(arr.reshape(-1, 1)).toarray()
+
 
     N = 50
     n = 2
@@ -49,7 +50,8 @@ if __name__ == '__main__':
     model = LeNet5(n, x.shape[1:])
 
     model.compile(
-        optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy', tfa.metrics.F1Score(n, average='weighted')]
+        optimizer='rmsprop', loss='categorical_crossentropy',
+        metrics=['accuracy', tfa.metrics.F1Score(n, average='weighted')]
     )
 
     model.fit(x, y, shuffle=True, verbose=2, epochs=5)
@@ -58,4 +60,3 @@ if __name__ == '__main__':
 
     cce = tf.keras.losses.SparseCategoricalCrossentropy()
     loss = cce(y, y_pred)
-
