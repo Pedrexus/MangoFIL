@@ -14,9 +14,7 @@ class Trainer:
         self.x = x
         self.y = y
 
-        self.model = model(
-            n_classes=unique(y).shape[0], input_shape=x.shape[1:]
-        )
+        self.model = model
         self.test_size = test_size
         self.validation_size = validation_size
 
@@ -49,7 +47,7 @@ class Trainer:
     def train(self, augmentation, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, *args, **kwargs):
         x_train, y_train, x_valid, y_valid, x_test, y_test = self.preprocessing()
 
-        model = self.model
+        model = self.model(n_classes=unique(self.y).shape[0], input_shape=self.x.shape[1:])
         model.compile(
             loss=loss,
             metrics=metrics,
