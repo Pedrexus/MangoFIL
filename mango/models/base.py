@@ -18,7 +18,7 @@ class BaseModel(Model):
         """
         super().__init__(*args, **kwargs)
 
-        self._n, self._shape = n_classes, input_shape
+        self._n_classes, self._input_shape = n_classes, input_shape
         self._ = dict(input_shape=input_shape, data_format='channels_last')
 
         self.out = Dense(self._n, activation=tf.nn.softmax)
@@ -38,8 +38,8 @@ class BaseModel(Model):
         :param input_shape: actual input_shape
         :return: function, function
         """
-        N, n = self.N_CLASSES, self.n_classes
-        S, s = min(self.INPUT_SHAPE[:-1]), min(self.input_shape[:-1])
+        N, n = self.N_CLASSES, self._n_classes
+        S, s = min(self.INPUT_SHAPE[:-1]), min(self._input_shape[:-1])
 
         @lru_cache(maxsize=1024)
         def maxn(a: int, b: int) -> int:
