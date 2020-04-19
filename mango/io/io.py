@@ -97,12 +97,10 @@ class IO:
         return x_data, y_data
 
     def save(self, dirpath='', *args, **kwargs):
+        self.path = os.path.join(self.root, dirpath)
         x, y = self.load(*args, **kwargs)
 
         resize = kwargs.get('resize', 1)
-
-        self.path = os.path.join(self.root, dirpath)
-
         n = len({*y})  # number of classes
 
         path = lambda s: os.path.join(self.path, f'{s}path{n}path{resize * 100}%.npy')
