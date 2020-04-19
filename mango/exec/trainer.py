@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from numpy import array, unique, mean, std
 
 import tensorflow as tf
@@ -20,6 +22,7 @@ class Trainer:
 
         self.random_state = random_state
 
+    @lru_cache(maxsize=2)
     def preprocessing(self):
         x = self.x.astype('float32')
 
@@ -35,19 +38,23 @@ class Trainer:
         # one-hot encoding
         y = one_hot_encode(self.y.reshape(-1, 1))
 
+        """
         x, x_test, y, y_test = train_test_split(
             x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
         )
         x_train, x_valid, y_train, y_valid = train_test_split(
             x, y, stratify=y, test_size=self.validation_size, random_state=self.random_state
         )
-
-        return x_train, y_train, x_valid, y_valid, x_test, y_test
+        """
+        return x, y
 
     def train(self, augmentation, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, *args, **kwargs):
-        x_train, y_train, x_valid, y_valid, x_test, y_test = self.preprocessing()
+        x, y = self.preprocessing()
 
-        model = self.model(n_classes=unique(self.y).shape[0], input_shape=self.x.shape[1:])
+        # train and test
+        x, x_test, y, y_test = train_test_split(x, y, stratify=y, test_size=self.test_size, random_state=self.random_state)
+
+        model = self.model(n_classes=unique(y).shape[0], input_shape=x.shape[1:])
         model.compile(
             loss=loss,
             metrics=metrics,
@@ -57,18 +64,19 @@ class Trainer:
         if augmentation:
             batch_size = augmentation.pop("batch_size", 32)
 
-            steps_per_epoch = max(len(x_train) // batch_size, 2)
-            validation_steps = max(len(x_valid) // batch_size, 2)
+            steps_per_epoch = max(len(x) // batch_size, 2)
+            validation_steps = max(len(x) * self.validation_size // batch_size, 2)
 
-            aug = ImageDataGenerator(**augmentation)
-            train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
+            aug = ImageDataGenerator(**augmentation, validation_split=self.validation_size)
+            train_gen = aug.flow(x, y, batch_size=batch_size)
 
             result = model.fit(
-                train_gen, *args, steps_per_epoch=steps_per_epoch,
-                validation_data=(x_valid, y_valid), validation_steps=validation_steps,
+                train_gen, *args, steps_per_epoch=steps_per_epoch, validation_steps=validation_steps,
                 **kwargs,
             )
         else:
+            # train and valid
+            x_train, x_valid, y_train, y_valid = train_test_split(x, y, stratify=y, test_size=self.test_size, random_state=self.random_state)
             result = model.fit(x_train, y_train, *args, validation_data=(x_valid, y_valid), **kwargs)
 
         return result
