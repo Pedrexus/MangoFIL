@@ -16,6 +16,8 @@ class IO:
         self.root = root
         self.excluded = excluded_dirs
 
+        self.path = None
+
     def gen(self, **kwargs):
         """A generator to simplify dealing with the data.
 
@@ -93,6 +95,24 @@ class IO:
             y_data = dataarr[:, 1].astype(np.uint8)
 
         return x_data, y_data
+
+    def save(self, dirpath='', *args, **kwargs):
+        x, y = self.load(*args, **kwargs)
+
+        resize = kwargs.get('resize', 1)
+
+        self.path = os.path.join(self.root, dirpath)
+
+        n = len({*y})  # number of classes
+
+        path = lambda s: os.path.join(self.path, f'{s}path{n}path{resize * 100}%.npy')
+        np.save(path('x'), x), np.save(path('y'), y)
+
+    def load_from_file(self, n_classes, resize, dirpath=''):
+        self.path = os.path.join(self.root, dirpath)
+
+        path = lambda s: os.path.join(self.path, f'{s}path{n_classes}path{resize * 100}%.npy')
+        return np.load(path('x')), np.load(path('y'))
 
     @property
     def shape(self):
