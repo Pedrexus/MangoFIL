@@ -3,6 +3,6 @@ venv
 /__*/
 /.*/
 __pycache__
-
+*.env
 data
 utils

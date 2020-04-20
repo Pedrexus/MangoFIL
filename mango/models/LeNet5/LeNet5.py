@@ -6,11 +6,10 @@ from ..registry import Registry
 
 
 class LeNet5(BaseModel, Registry):
-
     N_CLASSES = 10
     INPUT_SHAPE = (32, 32, 1)
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
         """Original LeNet5 implementation
 
         from the original paper:

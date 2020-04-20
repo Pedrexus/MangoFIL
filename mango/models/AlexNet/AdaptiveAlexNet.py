@@ -15,15 +15,15 @@ class AdaptiveAlexNet(AlexNet, Registry):
         and z depends on n_classes
         """
         super().__init__(n_classes, input_shape, *args, **kwargs)
-        _n, _s = self.define_params()
+        _n, _k = self.define_params()
 
-        self.conv1 = Conv2D(_n(96, 6), kernel_size=_s(11, 3), strides=_s(4, 2), activation=tf.nn.relu, **self._)
-        self.pool1 = MaxPooling2D(pool_size=_s(3, 2), strides=_s(2, 2), padding='valid')
-        self.conv2 = Conv2D(_n(256, 16), kernel_size=_s(5, 3), strides=_s(1, 1), activation=tf.nn.relu, padding='same')
-        self.pool2 = MaxPooling2D(pool_size=_s(3, 2), strides=_s(2, 2), padding='valid')
-        self.conv3 = Conv2D(_n(384, 24), kernel_size=_s(3, 3), strides=_s(1, 1), activation=tf.nn.relu, padding='same')
-        self.conv4 = Conv2D(_n(384, 24), kernel_size=_s(3, 3), strides=_s(1, 1), activation=tf.nn.relu, padding='same')
-        self.conv5 = Conv2D(_n(256, 16), kernel_size=_s(3, 3), strides=_s(1, 1), activation=tf.nn.relu, padding='same')
-        self.pool5 = MaxPooling2D(pool_size=_s(3, 2), strides=_s(2, 2), padding='valid')
+        self.conv1 = Conv2D(_n(96, 6), kernel_size=_k(11, 3), strides=4, activation=tf.nn.relu, **self._)
+
+        self.conv2 = Conv2D(_n(256, 16), kernel_size=_k(5, 3), strides=1, activation=tf.nn.relu, padding='same')
+
+        self.conv3a = Conv2D(_n(384, 24), kernel_size=_k(3, 3), strides=1, activation=tf.nn.relu, padding='same')
+        self.conv3b = Conv2D(_n(384, 24), kernel_size=_k(3, 3), strides=1, activation=tf.nn.relu, padding='same')
+        self.conv3c = Conv2D(_n(256, 16), kernel_size=_k(3, 3), strides=1, activation=tf.nn.relu, padding='same')
+
         self.dense1 = Dense(_n(4096, 64), activation=tf.nn.relu)
         self.dense2 = Dense(_n(4096, 64), activation=tf.nn.relu)

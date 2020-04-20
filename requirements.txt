@@ -10,3 +10,6 @@ pytest-benchmark
 tensorflow
 tensorflow-addons
 scikit-learn
+
+pymongo
+dnspython

@@ -10,7 +10,7 @@ class AlexNet(BaseModel, Registry):
     N_CLASSES = 1000
     INPUT_SHAPE = (227, 227, 3)
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
         """Original AlexNet implementation
 
         from the original paper:
@@ -23,10 +23,10 @@ class AlexNet(BaseModel, Registry):
         self.pool1 = MaxPooling2D(pool_size=3, strides=2, padding='valid')
         self.conv2 = Conv2D(256, kernel_size=5, strides=1, activation=tf.nn.relu, padding='same')
         self.pool2 = MaxPooling2D(pool_size=3, strides=2, padding='valid')
-        self.conv3 = Conv2D(384, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.conv4 = Conv2D(384, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.conv5 = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
-        self.pool5 = MaxPooling2D(pool_size=3, strides=2, padding='valid')
+        self.conv3a = Conv2D(384, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
+        self.conv3b = Conv2D(384, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
+        self.conv3c = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same')
+        self.pool3 = MaxPooling2D(pool_size=3, strides=2, padding='valid')
         self.flatten = Flatten()
         self.dense1 = Dense(4096, activation=tf.nn.relu)
         self.dense2 = Dense(4096, activation=tf.nn.relu)
@@ -36,10 +36,10 @@ class AlexNet(BaseModel, Registry):
         x = self.pool1(x)
         x = self.conv2(x)
         x = self.pool2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        x = self.pool5(x)
+        x = self.conv3a(x)
+        x = self.conv3b(x)
+        x = self.conv3c(x)
+        x = self.pool3(x)
         x = self.flatten(x)
         x = self.dense1(x)
         x = self.dense2(x)

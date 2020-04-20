@@ -10,7 +10,7 @@ class MLP(BaseModel, Registry):
     N_CLASSES = 4
     INPUT_SHAPE = (28, 28, 1)
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
         """Adaptive LeNet5 implementation"""
         super().__init__(n_classes, input_shape, *args, **kwargs)
 

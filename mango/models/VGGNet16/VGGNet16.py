@@ -10,7 +10,7 @@ class VGGNet16(BaseModel, Registry):
     N_CLASSES = 1000
     INPUT_SHAPE = (224, 224, 3)
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
         """Original VGGNet16 implementation
 
         from the original paper:

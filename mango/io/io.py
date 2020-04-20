@@ -12,6 +12,7 @@ from .functions import get_class_from_path
 
 class IO:
 
+    # TODO: after training and testing, results need to be saved
     def __init__(self, root, excluded_dirs):
         self.root = root
         self.excluded = excluded_dirs

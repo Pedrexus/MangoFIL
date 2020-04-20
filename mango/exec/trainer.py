@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from numpy import array, unique, mean, std
+from numpy import array, unique, mean, std, argmax, absolute
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -12,15 +12,16 @@ from ..helpers import one_hot_encode
 class Trainer:
 
     def __init__(self, x: array, y: array, model: tf.keras.Model, test_size: float, validation_size: float = 0,
-                 random_state: int = 123):
+                 random_state: int = 123, db=None):
         self.x = x
         self.y = y
 
         self.model = model
         self.test_size = test_size
         self.validation_size = validation_size
-
         self.random_state = random_state
+
+        self.db = db
 
     @lru_cache(maxsize=2)
     def preprocessing(self):
@@ -76,9 +77,36 @@ class Trainer:
                 **kwargs,
             )
         else:
+            batch_size = None
             result = model.fit(x_train, y_train, *args, validation_data=(x_valid, y_valid), **kwargs)
 
+        if self.db:
+            document = self.make_document(augmentation, batch_size, loss, optimizer, result)
+            self.db.insert(document)
         return result
+
+    def make_document(self, augmentation, batch_size, loss, optimizer, result):
+        best_epoch = argmax(absolute(result.history['val_f1_score']))  # loss is negative
+        t_f1 = result.history['f1_score'][best_epoch]
+        v_f1 = result.history['val_f1_score'][best_epoch]
+
+        document = dict(
+            n_classes=len({*self.y}),
+            input_shape=self.x.shape[1:],
+            model=self.model.__class__.__name__,
+            loss=str(loss),
+            optimizer=str(optimizer),
+            test_size=self.test_size,
+            validation_size=self.validation_size,
+            random_state=self.random_state,
+            augmentation={'batch_size': batch_size, **augmentation},
+            best_epoch=best_epoch,
+            best_train_score=t_f1,
+            best_validation_score=v_f1,
+            result=result.history,
+        )
+
+        return document
 
     def gpu_info(self):
         device_name = tf.test.gpu_device_name()

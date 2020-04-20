@@ -10,7 +10,7 @@ class BaseModel(Model):
     N_CLASSES = None
     INPUT_SHAPE = ()
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
         """base keras model for easy using of summary
 
         :param n_classes: number of distinct classes

@@ -10,7 +10,7 @@ class SINGHNet(BaseModel, Registry):
     N_CLASSES = 4
     INPUT_SHAPE = (128, 128, 3)
 
-    def __init__(self, n_classes, input_shape, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
         """Original SINGHNet implementation from paper
         Multilayer Convolution Neural Network for the Classification of Mango Leaves Infected by Anthracnose Disease
         by UDAY PRATAP SINGH et al.
