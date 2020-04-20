@@ -42,16 +42,16 @@ class BaseModel(Model):
         S, s = min(self.INPUT_SHAPE[:-1]), min(self._input_shape[:-1])
 
         @lru_cache(maxsize=1024)
-        def maxn(a: int, b: int) -> int:
-            _a = (a * n) // N
-            return max(_a, b)
-
-        @lru_cache(maxsize=1024)
-        def maxs(a: int, b: int) -> int:
+        def kernel(a: int, b: int) -> int:
             _a = (a * s) // S
             return max(_a, b)
 
-        return maxn, maxs
+        @lru_cache(maxsize=1024)
+        def units(a: int, b: int) -> int:
+            _a = (a * n) // N
+            return max(_a, b) * kernel(a, b)
+
+        return units, kernel
 
     def model(self):
         x = Input(shape=self._input_shape)

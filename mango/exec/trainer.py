@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from numpy import array, unique, mean, std, argmax, absolute
+from numpy import array, unique, mean, std, argmax, absolute, log10, log2
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -61,8 +61,9 @@ class Trainer:
         if augmentation:
             batch_size = augmentation.pop("batch_size", 32)
 
-            steps_per_epoch = max(len(x_train) // batch_size, 2)
-            validation_steps = max(len(x_valid) // batch_size, 2)
+            _steps = int(log2(batch_size))
+            steps_per_epoch = max(len(x_train) // batch_size, _steps, 2)
+            validation_steps = max(len(x_valid) // batch_size, _steps, 2)
 
             aug = ImageDataGenerator(**augmentation)
             train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
