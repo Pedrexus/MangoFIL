@@ -94,7 +94,7 @@ class Trainer:
             n_classes=len({*self.y}),
             input_shape=self.x.shape[1:],
             data_size=self.x.shape[0],
-            model=self.model.__class__.__name__,
+            model=str(self.model),
             loss=str(loss),
             optimizer=str(optimizer),
             test_size=float(self.test_size),
