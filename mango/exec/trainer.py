@@ -100,7 +100,7 @@ class Trainer:
             test_size=float(self.test_size),
             validation_size=float(self.validation_size),
             random_state=int(self.random_state),
-            augmentation={'batch_size': batch_size, **augmentation},
+            augmentation={'batch_size': batch_size, **augmentation} if augmentation else None,
             best_epoch=int(best_epoch),
             best_train_score=float(t_f1),
             best_validation_score=float(v_f1),
