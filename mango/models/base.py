@@ -49,7 +49,7 @@ class BaseModel(Model):
         @lru_cache(maxsize=1024)
         def units(a: int, b: int) -> int:
             _a = (a * n) // N
-            return max(_a, b) * kernel(a, b)
+            return max(_a, b) * kernel(b, 1)  # or kernel(log2(a), 1)
 
         return units, kernel
 
