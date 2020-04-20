@@ -1,4 +1,5 @@
 from functools import lru_cache
+from math import log2
 
 import tensorflow as tf
 from tensorflow.keras import Model
@@ -49,7 +50,7 @@ class BaseModel(Model):
         @lru_cache(maxsize=1024)
         def units(a: int, b: int) -> int:
             _a = (a * n) // N
-            return max(_a, b) * kernel(b, 1)  # or kernel(log2(a), 1)
+            return max(_a, b) * kernel(int(log2(a)), 1)  # or kernel(log2(a), 1)
 
         return units, kernel
 
