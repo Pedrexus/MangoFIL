@@ -1,7 +1,8 @@
 from functools import lru_cache
-from math import log2, log10
+from math import log2, log10, sqrt
 
 import tensorflow as tf
+from numpy import prod
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Dense
 
@@ -26,7 +27,7 @@ class BaseModel(Model):
     def define_params(self):
         """define params of adaptive version of model
 
-        the params are defined with a LINEAR scale based
+        the params are defined with a LINEAR/SQRT scale based
         that each layer has an output shape = (None, x, y, z)
         where x, y depends on input_shape
         and z depends on n_classes
@@ -39,11 +40,20 @@ class BaseModel(Model):
         :return: function, function
         """
         N, n = self.N_CLASSES, self._n_classes
-        S, s = min(self.INPUT_SHAPE[:-1]), min(self._input_shape[:-1])
+        S, s = prod(self.INPUT_SHAPE), prod(self._input_shape)
 
         @lru_cache(maxsize=1024)
-        def kernel(a: int, b: int) -> int:
-            _a = (a * s) // S
+        def kernel(k: int, b: int) -> int:
+            """defines adapted kernel size
+
+            S^2 / k^2 = cte
+
+            :param k: original kernel size
+            :param b: min kernel size
+            :return: adapted kernel size
+            """
+            a = k * k
+            _a = int(sqrt((a * s) // S))
             return max(_a, b)
 
         @lru_cache(maxsize=1024)
