@@ -52,9 +52,9 @@ class BaseModel(Model):
             :param b: min kernel size
             :return: adapted kernel size
             """
-            a = k * k
-            _a = int(sqrt((a * s) // S))
-            return max(_a, b)
+            a = k * k * self.INPUT_SHAPE[-1]
+            _a = ((a * s) // S) ** (1 / 3)
+            return max(int(_a), b)
 
         @lru_cache(maxsize=1024)
         def units(u: int, b: int) -> int:
