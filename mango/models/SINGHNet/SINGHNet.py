@@ -3,6 +3,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatte
 
 from ..base import BaseModel
 from ..registry import Registry
+from ...layers.convolution import DoubleConv2D
 
 
 class SINGHNet(BaseModel, Registry):
@@ -19,13 +20,11 @@ class SINGHNet(BaseModel, Registry):
         """
         super().__init__(n_classes, input_shape, *args, **kwargs)
 
-        self.conv1a = Conv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid', **self._)
-        self.conv1b = Conv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv1 = DoubleConv2D(128, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid', **self._)
         self.pool1 = MaxPooling2D(pool_size=2, strides=2, padding='valid')
         self.drop1 = Dropout(.5)
 
-        self.conv2a = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
-        self.conv2b = Conv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
+        self.conv2 = DoubleConv2D(256, kernel_size=3, strides=1, activation=tf.nn.relu, padding='valid')
         self.pool2 = MaxPooling2D(pool_size=2, strides=2, padding='valid')
         self.drop2 = Dropout(.5)
 

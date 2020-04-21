@@ -41,3 +41,19 @@ class NormConv2D(NormalizationActivation):
         config = super().get_config()
         config.update({'conv2D': self.conv})
         return config
+
+
+class NormActConv2D(NormalizationActivation):
+    def __init__(self, filters, kernel_size, strides=(1, 1), padding='valid', use_bias=True, **kwargs):
+        super().__init__(**kwargs)
+        self.conv = Conv2D(filters, kernel_size, strides, padding, use_bias=use_bias, activation=None)
+
+    def call(self, inputs, *args, **kwargs):
+        x = super().call(inputs, *args, **kwargs)
+        x = self.conv(x)
+        return x
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({'conv2D': self.conv})
+        return config

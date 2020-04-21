@@ -1,1 +1,2 @@
 from .DoubleDense import DoubleDense
+from .DenseTransitionBlockGroup2D import DenseTransitionBlockGroup2D
