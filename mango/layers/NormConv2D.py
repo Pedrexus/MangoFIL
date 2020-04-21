@@ -22,8 +22,7 @@ class NormConv2D(Layer):
         x = self.activation(x)
         return x
 
-
     def get_config(self):
-        config = super(Linear, self).get_config()
-        config.update({'units': self.units})
+        config = super().get_config()
+        config.update({'conv2D': self.conv, 'batchNormalization': self.norm, 'activation': self.activation})
         return config
