@@ -12,11 +12,12 @@ from ..helpers import one_hot_encode
 class Trainer:
 
     def __init__(self, x: array, y: array, model: tf.keras.Model, test_size: float, validation_size: float = 0,
-                 random_state: int = 123, db=None):
+                 random_state: int = 123, db=None, **kwargs):
         self.x = x
         self.y = y
 
         self.model = model
+        self.model_kwargs = kwargs
         self.test_size = test_size
         self.validation_size = validation_size
         self.random_state = random_state
@@ -51,7 +52,7 @@ class Trainer:
     def train(self, augmentation, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, *args, **kwargs):
         x_train, y_train, x_valid, y_valid, x_test, y_test = self.preprocessing()
 
-        model = self.model(n_classes=unique(self.y).shape[0], input_shape=self.x.shape[1:])
+        model = self.model(n_classes=unique(self.y).shape[0], input_shape=self.x.shape[1:], **self.model_kwargs)
         model.compile(
             loss=loss,
             metrics=metrics,
@@ -61,8 +62,8 @@ class Trainer:
         if augmentation:
             batch_size = augmentation.pop("batch_size", 32)
 
-            steps_per_epoch = min(len(x_train) // batch_size or 1, 2)
-            validation_steps = min(len(x_valid) // batch_size or 1, 2)
+            steps_per_epoch = max(len(x_train) // batch_size, 1)
+            validation_steps = max(len(x_valid) // batch_size, 1)
 
             aug = ImageDataGenerator(**augmentation)
             train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
@@ -95,6 +96,7 @@ class Trainer:
             input_shape=self.x.shape[1:],
             data_size=self.x.shape[0],
             model=str(self.model),
+            model_kwargs=self.model_kwargs,
             loss=str(loss),
             optimizer=str(optimizer),
             test_size=float(self.test_size),
