@@ -1,15 +1,14 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
+from tensorflow.keras.layers import MaxPooling2D, Flatten
 
-from mango.layers.convolution.DoubleConv2D import DoubleConv2D
-from mango.layers.convolution.TripleConv2D import TripleConv2D
-from mango.layers.dense.DoubleDense import DoubleDense
 from ..base import BaseModel
 from ..registry import Registry
+from ...layers.convolution.DoubleConv2D import DoubleConv2D
+from ...layers.convolution.TripleConv2D import TripleConv2D
+from ...layers.dense.DoubleDense import DoubleDense
 
 
 class VGGNet16(BaseModel, Registry):
-
     N_CLASSES = 1000
     INPUT_SHAPE = (224, 224, 3)
 

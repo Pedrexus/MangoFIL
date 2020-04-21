@@ -1,8 +1,8 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten
 
-from mango.layers.convolution import DoubleConv2D
-from mango.layers.dense import DoubleDense
+from ...layers.convolution import DoubleConv2D
+from ...layers.dense import DoubleDense
 from ..base import BaseModel
 from ..registry import Registry
 
