@@ -1,11 +1,11 @@
 import tensorflow as tf
+from tensorflow.keras.layers import GlobalAveragePooling2D, GlobalMaxPooling2D
 from tensorflow.keras.layers import MaxPooling2D, Flatten
-from tensorflow_core.python.keras.layers import GlobalAveragePooling2D, GlobalMaxPooling2D
 
 from ..base import BaseModel
 from ..registry import Registry
-from ...layers.NormConv2D import NormalizationActivation
-from ...layers.PadNormConv2D import PadNormConv2D
+from ...layers.convolution.NormConv2D import NormalizationActivation
+from ...layers.convolution.PadNormConv2D import PadNormConv2D
 from ...layers.dense import DenseTransitionBlockGroup2D
 from ...layers.dense.blocks import DenseBlock2D
 
@@ -14,7 +14,8 @@ class DenseNet(BaseModel, Registry):
     N_CLASSES = 1000
     INPUT_SHAPE = (224, 224, 3)
 
-    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, blocks=(6, 12, 24, 16), reduction=.5, growth_rate=32, pooling=None, epsilon=1.001e-5, *args,
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, blocks=(6, 12, 24, 16), reduction=.5, growth_rate=32,
+                 pooling=None, epsilon=1.001e-5, *args,
                  **kwargs):
         """Densely Connected Convolutional Networks
             (https://arxiv.org/abs/1608.06993) (CVPR 2017 Best Paper Award)
