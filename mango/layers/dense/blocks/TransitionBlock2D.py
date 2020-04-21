@@ -12,11 +12,15 @@ class TransitionBlock2D(Layer):
         :param growth_rate: float, growth rate at dense layers.
         """
         super().__init__()
+        self.reduction = reduction
         self.conv = lambda n: NormConv2D(int(n * reduction), 1, use_bias=False, *args, **kwargs)
         self.pool = AveragePooling2D(pool_size=2, strides=2)
 
+    def build(self, input_shape):
+        # self.conv.conv.filters = int(input_shape[-1] * self.reduction)
+        self.conv = self.conv(int(input_shape[-1]))
+
     def call(self, inputs, *args, **kwargs):
-        shape = int_shape(inputs)[-1]
-        x = self.conv(shape)(inputs)  # channels last
+        x = self.conv(inputs)  # channels last
         x = self.pool(x)
         return x
