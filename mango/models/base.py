@@ -65,7 +65,7 @@ class BaseModel(Model):
             :param b: min unit amount
             :return: adapted units amount
             """
-            a = u * kernel(int(log10(u)), 1)
+            a = u * kernel(int(log2(u)), 1)
             _a = (a * n) // N
             return max(_a, b)
 
