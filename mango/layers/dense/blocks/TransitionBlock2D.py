@@ -1,6 +1,6 @@
 from tensorflow.keras.layers import Layer, AveragePooling2D
 
-from mango.layers.NormConv2D import NormConv2D
+from ...convolution.NormConv2D import NormConv2D
 
 
 class TransitionBlock2D(Layer):

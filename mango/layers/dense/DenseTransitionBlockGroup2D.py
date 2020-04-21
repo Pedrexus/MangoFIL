@@ -2,7 +2,7 @@ from typing import Iterable
 
 from tensorflow.keras.layers import Layer
 
-from mango.layers.dense.blocks.DenseTransitionBlock2D import DenseTransitionBlock2D
+from .blocks.DenseTransitionBlock2D import DenseTransitionBlock2D
 
 
 class DenseTransitionBlockGroup2D(Layer):

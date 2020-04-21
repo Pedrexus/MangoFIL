@@ -1,6 +1,6 @@
 from tensorflow.keras.layers import Layer, Concatenate
 
-from mango.layers.NormConv2D import NormActConv2D
+from ...convolution.NormConv2D import NormActConv2D
 
 
 class ConvBlock2D(Layer):

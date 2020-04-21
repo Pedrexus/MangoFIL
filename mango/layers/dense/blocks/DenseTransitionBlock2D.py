@@ -1,7 +1,7 @@
 from tensorflow.keras.layers import Layer
 
-from mango.layers.dense.blocks.DenseBlock2D import DenseBlock2D
-from mango.layers.dense.blocks.TransitionBlock2D import TransitionBlock2D
+from .DenseBlock2D import DenseBlock2D
+from .TransitionBlock2D import TransitionBlock2D
 
 
 class DenseTransitionBlock2D(Layer):

@@ -1,5 +1,5 @@
 from tensorflow.keras.layers import Layer
-from mango.layers.dense.blocks.ConvBlock2D import ConvBlock2D
+from .ConvBlock2D import ConvBlock2D
 
 
 class DenseBlock2D(Layer):
