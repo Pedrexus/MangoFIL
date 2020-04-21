@@ -57,10 +57,17 @@ class BaseModel(Model):
             return max(_a, b)
 
         @lru_cache(maxsize=1024)
-        def units(a: int, b: int) -> int:
+        def units(u: int, b: int) -> int:
+            """defines adapted unit amount
+            (dense units or filter units)
+
+            :param u: original unit amount
+            :param b: min unit amount
+            :return: adapted units amount
+            """
+            a = u * kernel(int(log10(u)), 1)
             _a = (a * n) // N
-            __a = int(max(_a, log10(a), 1))
-            return max(_a, b) * kernel(__a, 1)  # or kernel(log2(a), 1)
+            return max(_a, b)
 
         return units, kernel
 
