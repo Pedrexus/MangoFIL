@@ -16,7 +16,7 @@ class TransitionBlock2D(Layer):
         self.pool = AveragePooling2D(pool_size=2, strides=2)
 
     def call(self, inputs, *args, **kwargs):
-        shape = int_shape(inputs)
+        shape = int_shape(inputs)[-1]
         x = self.conv(shape)(inputs)  # channels last
         x = self.pool(x)
         return x
