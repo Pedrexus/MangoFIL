@@ -1,3 +1,4 @@
+from tensorflow.keras.backend import int_shape
 from tensorflow.keras.layers import Layer, AveragePooling2D
 
 from ...convolution.NormConv2D import NormConv2D
@@ -15,6 +16,7 @@ class TransitionBlock2D(Layer):
         self.pool = AveragePooling2D(pool_size=2, strides=2)
 
     def call(self, inputs, *args, **kwargs):
-        x = self.conv(inputs.shape[-1])(inputs)  # channels last
+        shape = int_shape(inputs)
+        x = self.conv(shape)(inputs)  # channels last
         x = self.pool(x)
         return x
