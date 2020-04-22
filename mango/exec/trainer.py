@@ -140,9 +140,9 @@ class Trainer:
             # ----------- TRAINING ------------- #
             if augmentation:
                 train_gen, train_aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train)
-                history = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
+                result = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
             else:
-                history = model.fit(x_train, y_train, *args, **kwargs)
+                result = model.fit(x_train, y_train, *args, **kwargs)
 
             # ----------- EVALUATION ----------- #
             verbose = kwargs.get('verbose', 0)
@@ -153,7 +153,7 @@ class Trainer:
             else:
                 evaluation = model.evaluate(x_test, y_test, verbose=verbose)
 
-            all_results.append([history, evaluation])
+            all_results.append([result.history, evaluation])
 
         if self.db:
             document = self.make_cv_document(n_splits, loss, optimizer, augmentation, all_results)
