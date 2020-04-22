@@ -5,6 +5,7 @@ import tensorflow as tf
 from numpy import array, unique, mean, std, argmax, absolute
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tqdm import tqdm
 
 from ..helpers import one_hot_encode
 
@@ -126,7 +127,7 @@ class Trainer:
 
         # --------- K-FOLD CROSS VALIDATION ---- #
         skf = StratifiedKFold(n_splits, True, self.random_state)
-        for train_index, test_index in skf.split(x, y):
+        for train_index, test_index in tqdm(skf.split(x, y), total=n_splits, smoothing=.1):
 
             # ----------- VARIABLES ------------ #
             x_train, x_test = x[train_index], x[test_index]
