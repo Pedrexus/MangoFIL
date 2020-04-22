@@ -61,8 +61,10 @@ class Trainer:
 
         if augmentation:
             batch_size = augmentation.pop("batch_size", 32)
+            n_images = augmentation.pop("n_images", len(x_train) * 2)
 
-            steps_per_epoch = max(len(x_train) // batch_size, 1)
+            # number of images = batch_size * steps_per_epoch (per epoch)
+            steps_per_epoch = max(n_images // batch_size, len(x_train) // batch_size, 1)
             validation_steps = max(len(x_valid) // batch_size, 1)
 
             aug = ImageDataGenerator(**augmentation)
