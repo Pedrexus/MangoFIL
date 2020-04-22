@@ -123,7 +123,7 @@ class Trainer:
     def cv(self, n_splits, loss, metrics, optimizer, augmentation, *args, **kwargs):
         x, y = self.preprocessing()
 
-        all_results, all_evaluations = [], []
+        all_results = []
 
         # --------- K-FOLD CROSS VALIDATION ---- #
         skf = StratifiedKFold(n_splits, True, self.random_state)
@@ -158,7 +158,7 @@ class Trainer:
         if self.db:
             document = self.make_cv_document(n_splits, loss, optimizer, augmentation, all_results)
             self.db.insert('mango-cv', document)
-        return all_results, all_evaluations
+        return all_results
 
     def make_cv_document(self, n_splits, loss, optimizer, augmentation, all_results):
         n_classes, input_shape = len({*self.y}), self.x.shape[1:]
