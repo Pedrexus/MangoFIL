@@ -147,8 +147,8 @@ class Trainer:
 
             # ----------- EVALUATION ----------- #
             if augmentation:
-                test_gen, test_aug_kwargs = self.__data_augmentation(augmentation, x_test, y_test)
-                evaluation = model.evaluate(test_gen, *args, **test_aug_kwargs, **kwargs)
+                test_gen, _ = self.__data_augmentation(augmentation, x_test, y_test)
+                evaluation = model.evaluate(test_gen, *args, **kwargs)
             else:
                 evaluation = model.evaluate(x_test, y_test, *args, **kwargs)
 
