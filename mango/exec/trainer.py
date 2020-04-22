@@ -26,7 +26,7 @@ class Trainer:
         self.db = db
 
     @lru_cache(maxsize=2)
-    def preprocessing(self):
+    def preprocessing(self, one_hot=False):
         x = self.x.astype('float32')
 
         # ~ min-max normalization
@@ -38,14 +38,17 @@ class Trainer:
         # gauss normalization
         x = (x - mean_vals) / std_val
 
-        # one-hot encoding
-        y = one_hot_encode(self.y.reshape(-1, 1))
+        if one_hot:
+            # one-hot encoding
+            y = one_hot_encode(self.y.reshape(-1, 1))
+        else:
+            y = self.y
 
         return x, y
 
     @lru_cache(maxsize=2)
-    def splitting(self):
-        x, y = self.preprocessing()
+    def splitting(self, *args, **kwargs):
+        x, y = self.preprocessing(*args, **kwargs)
 
         x, x_test, y, y_test = train_test_split(
             x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
@@ -79,7 +82,7 @@ class Trainer:
         return train_gen, dict(steps_per_epoch=steps_per_epoch)
 
     def train(self, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, augmentation, *args, **kwargs):
-        x_train, y_train, x_valid, y_valid, x_test, y_test = self.splitting()
+        x_train, y_train, x_valid, y_valid, x_test, y_test = self.splitting(one_hot=True)
 
         model = self.__model()
         model.compile(loss=loss, metrics=metrics, optimizer=optimizer)
@@ -121,7 +124,7 @@ class Trainer:
         return document
 
     def cv(self, n_splits, loss, metrics, optimizer, augmentation, *args, **kwargs):
-        x, y = self.preprocessing()
+        x, y = self.preprocessing(one_hot=False)
 
         all_results = []
 
@@ -132,6 +135,11 @@ class Trainer:
             # ----------- VARIABLES ------------ #
             x_train, x_test = x[train_index], x[test_index]
             y_train, y_test = y[train_index], y[test_index]
+
+            # ------------ ENCODING ------------ #
+            # tensorflow F1Score demands one-hot encoding
+            y_train = one_hot_encode(y_train.reshape(-1, 1))
+            y_test = one_hot_encode(y_test.reshape(-1, 1))
 
             # ------------- MODEL -------------- #
             model = self.__model()
