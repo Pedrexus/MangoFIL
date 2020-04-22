@@ -1,10 +1,10 @@
+from copy import deepcopy
 from functools import lru_cache
 
-from numpy import array, unique, mean, std, argmax, absolute, log10, log2
-
 import tensorflow as tf
+from numpy import array, unique, mean, std, argmax, absolute
+from sklearn.model_selection import train_test_split, StratifiedKFold
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from sklearn.model_selection import train_test_split
 
 from ..helpers import one_hot_encode
 
@@ -40,6 +40,12 @@ class Trainer:
         # one-hot encoding
         y = one_hot_encode(self.y.reshape(-1, 1))
 
+        return x, y
+
+    @lru_cache(maxsize=2)
+    def splitting(self):
+        x, y = self.preprocessing()
+
         x, x_test, y, y_test = train_test_split(
             x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
         )
@@ -49,46 +55,48 @@ class Trainer:
 
         return x_train, y_train, x_valid, y_valid, x_test, y_test
 
-    def train(self, augmentation, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, *args, **kwargs):
-        x_train, y_train, x_valid, y_valid, x_test, y_test = self.preprocessing()
+    def __model(self) -> tf.keras.Model:
+        return self.model(n_classes=unique(self.y).shape[0], input_shape=self.x.shape[1:], **self.model_kwargs)
 
-        model = self.model(n_classes=unique(self.y).shape[0], input_shape=self.x.shape[1:], **self.model_kwargs)
-        model.compile(
-            loss=loss,
-            metrics=metrics,
-            optimizer=optimizer
-        )
+    @staticmethod
+    def __data_augmentation(augmentation, x_train, y_train, x_valid=None, y_valid=None):
+        augmentation = deepcopy(augmentation)
+        batch_size = augmentation.pop("batch_size", 32)
+        n_images = augmentation.pop("n_images", len(x_train) * 2)
 
-        if augmentation:
-            batch_size = augmentation.pop("batch_size", 32)
-            n_images = augmentation.pop("n_images", len(x_train) * 2)
+        # number of images = batch_size * steps_per_epoch (per epoch)
+        steps_per_epoch = max(n_images // batch_size, len(x_train) // batch_size, 1)
 
-            # number of images = batch_size * steps_per_epoch (per epoch)
-            steps_per_epoch = max(n_images // batch_size, len(x_train) // batch_size, 1)
+        aug = ImageDataGenerator(**augmentation)
+        train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
+
+        if x_valid and y_valid:
             validation_steps = max(len(x_valid) // batch_size, 1)
-
-            aug = ImageDataGenerator(**augmentation)
-            train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
             valid_gen = aug.flow(x_valid, y_valid, batch_size=batch_size)
 
-            result = model.fit(
-                train_gen,
-                *args,
-                steps_per_epoch=steps_per_epoch,
-                validation_data=valid_gen,
-                validation_steps=validation_steps,
-                **kwargs,
-            )
+            return train_gen, dict(steps_per_epoch=steps_per_epoch, validation_data=valid_gen, validation_steps=validation_steps)
+        return train_gen, dict(steps_per_epoch=steps_per_epoch)
+
+    def train(self, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, augmentation, *args, **kwargs):
+        x_train, y_train, x_valid, y_valid, x_test, y_test = self.splitting()
+
+        model = self.__model()
+        model.compile(loss=loss, metrics=metrics, optimizer=optimizer)
+
+        if augmentation:
+            batch_size = augmentation.get("batch_size", 32)
+            train_gen, aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train, x_valid, y_valid)
+            result = model.fit(train_gen, *args, **aug_kwargs, **kwargs)
         else:
             batch_size = None
             result = model.fit(x_train, y_train, *args, validation_data=(x_valid, y_valid), **kwargs)
 
         if self.db:
-            document = self.make_document(augmentation, batch_size, loss, optimizer, result)
-            self.db.insert(document)
+            document = self.make_train_document(loss, optimizer, result, augmentation)
+            self.db.insert('mango-train', document)
         return result
 
-    def make_document(self, augmentation, batch_size, loss, optimizer, result):
+    def make_train_document(self, loss, optimizer, result, augmentation):
         best_epoch = argmax(absolute(result.history['val_f1_score']))  # loss is negative
         t_f1 = result.history['f1_score'][best_epoch]
         v_f1 = result.history['val_f1_score'][best_epoch]
@@ -97,18 +105,77 @@ class Trainer:
             n_classes=len({*self.y}),
             input_shape=self.x.shape[1:],
             data_size=self.x.shape[0],
-            model=str(self.model),
+            model=str(self.model.__name__),
             model_kwargs=self.model_kwargs,
             loss=str(loss),
             optimizer=str(optimizer),
             test_size=float(self.test_size),
             validation_size=float(self.validation_size),
             random_state=int(self.random_state),
-            augmentation={'batch_size': batch_size, **augmentation} if augmentation else None,
+            augmentation={**augmentation} if augmentation else None,
             best_epoch=int(best_epoch),
             best_train_score=float(t_f1),
             best_validation_score=float(v_f1),
             result=result.history,
+        )
+
+        return document
+
+    def cv(self, n_splits, loss, metrics, optimizer, augmentation, *args, **kwargs):
+        x, y = self.preprocessing()
+
+        all_results, all_evaluations = [], []
+
+        # --------- K-FOLD CROSS VALIDATION ---- #
+        skf = StratifiedKFold(n_splits, True, self.random_state)
+        for train_index, test_index in skf.split(x, y):
+
+            # ----------- VARIABLES ------------ #
+            x_train, x_test = x[train_index], x[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+
+            # ------------- MODEL -------------- #
+            model = self.__model()
+            model.compile(loss=loss, metrics=metrics, optimizer=optimizer)
+
+            # ----------- TRAINING ------------- #
+            if augmentation:
+                train_gen, train_aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train)
+                history = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
+            else:
+                history = model.fit(x_train, y_train, *args, **kwargs)
+
+            # ----------- EVALUATION ----------- #
+            if augmentation:
+                test_gen, test_aug_kwargs = self.__data_augmentation(augmentation, x_test, y_test)
+                evaluation = model.evaluate(test_gen, *args, **test_aug_kwargs, **kwargs)
+            else:
+                evaluation = model.evaluate(x_test, y_test, *args, **kwargs)
+
+            all_results.append([history, evaluation])
+
+        if self.db:
+            document = self.make_cv_document(loss, optimizer, augmentation, all_results)
+            self.db.insert('mango-cv', document)
+        return all_results, all_evaluations
+
+    def make_cv_document(self, n_splits, loss, optimizer, augmentation, all_results):
+        n_classes, input_shape = len({*self.y}), self.x.shape[1:]
+
+        document = dict(
+            n_classes=n_classes,
+            input_shape=input_shape,
+            data_size=self.x.shape[0],
+            model=str(self.model.__name__),
+            model_kwargs=self.model_kwargs,
+            loss=str(loss),
+            optimizer=str(optimizer),
+            test_size=float(self.test_size),
+            validation_size=float(self.validation_size),
+            random_state=int(self.random_state),
+            augmentation={**augmentation} if augmentation else None,
+            n_splits=n_splits,
+            result=all_results,
         )
 
         return document
