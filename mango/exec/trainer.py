@@ -148,8 +148,8 @@ class Trainer:
             verbose = kwargs.get('verbose', 0)
             verbose = 1 if verbose == 2 else verbose
             if augmentation:
-                test_gen, _ = self.__data_augmentation(augmentation, x_test, y_test)
-                evaluation = model.evaluate(test_gen, verbose=verbose)
+                test_gen, test_aug_kwargs = self.__data_augmentation(augmentation, x_test, y_test)
+                evaluation = model.evaluate(test_gen, verbose=verbose, steps=test_aug_kwargs['steps_per_epoch'])
             else:
                 evaluation = model.evaluate(x_test, y_test, verbose=verbose)
 
