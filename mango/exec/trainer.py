@@ -84,11 +84,9 @@ class Trainer:
         model.compile(loss=loss, metrics=metrics, optimizer=optimizer)
 
         if augmentation:
-            batch_size = augmentation.get("batch_size", 32)
             train_gen, aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train, x_valid, y_valid)
             result = model.fit(train_gen, *args, **aug_kwargs, **kwargs)
         else:
-            batch_size = None
             result = model.fit(x_train, y_train, *args, validation_data=(x_valid, y_valid), **kwargs)
 
         if self.db:
@@ -146,16 +144,18 @@ class Trainer:
                 history = model.fit(x_train, y_train, *args, **kwargs)
 
             # ----------- EVALUATION ----------- #
+            verbose = kwargs.get('verbose', 0)
+            verbose = 1 if verbose == 2 else verbose
             if augmentation:
                 test_gen, _ = self.__data_augmentation(augmentation, x_test, y_test)
-                evaluation = model.evaluate(test_gen, *args, **kwargs)
+                evaluation = model.evaluate(test_gen, verbose=verbose)
             else:
-                evaluation = model.evaluate(x_test, y_test, *args, **kwargs)
+                evaluation = model.evaluate(x_test, y_test, verbose=verbose)
 
             all_results.append([history, evaluation])
 
         if self.db:
-            document = self.make_cv_document(loss, optimizer, augmentation, all_results)
+            document = self.make_cv_document(n_splits, loss, optimizer, augmentation, all_results)
             self.db.insert('mango-cv', document)
         return all_results, all_evaluations
 
