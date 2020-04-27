@@ -74,7 +74,7 @@ class Trainer:
         aug = ImageDataGenerator(**augmentation)
         train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
 
-        if x_valid and y_valid:
+        if x_valid is not None and y_valid is not None:
             validation_steps = max(len(x_valid) // batch_size, 1)
             valid_gen = aug.flow(x_valid, y_valid, batch_size=batch_size)
 

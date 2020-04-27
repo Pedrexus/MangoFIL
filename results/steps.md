@@ -13,6 +13,12 @@ Data Visualization:
     
     - obs:
         - compare same resolution
-        - compare same aug images number
+        - compare same aug params
         - compare same k-fold splits
+        
+Final chars:
+    - 5 folds
+    - 1024 aug images (from 470 * 4 / 5) for training
+    - 512 batch size
+    - 100 epochs
         
