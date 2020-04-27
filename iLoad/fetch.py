@@ -45,7 +45,6 @@ def load_norm_center_data(imgsize, mode):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    from matplotlib import ticker
     from collections import Counter
 
     cls_dict = {0: 'sem Colapso e sem Antracnose',
@@ -62,3 +61,4 @@ if __name__ == '__main__':
 
     df = pd.DataFrame.from_dict(c, orient='index')
     df.plot(kind='bar')
+    plt.show()
