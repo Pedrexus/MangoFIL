@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.layers import GlobalAveragePooling2D, GlobalMaxPooling2D
-from tensorflow.keras.layers import MaxPooling2D, Flatten
+from tensorflow.keras.layers import MaxPooling2D, Flatten, Dropout
 
 from ..base import BaseModel
 from ..registry import Registry
@@ -15,7 +15,7 @@ class DenseNet(BaseModel, Registry):
     INPUT_SHAPE = (224, 224, 3)
 
     def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, blocks=(6, 12, 24, 16), reduction=.5, growth_rate=32,
-                 pooling=None, epsilon=1.001e-5, *args,
+                 pooling=None, n_dropout=0, epsilon=1.001e-5, *args,
                  **kwargs):
         """Densely Connected Convolutional Networks
             (https://arxiv.org/abs/1608.06993) (CVPR 2017 Best Paper Award)
@@ -34,10 +34,14 @@ class DenseNet(BaseModel, Registry):
             - `max` - global max pooling will is applied before dense softmax.
         """
         super().__init__(n_classes, input_shape, *args, **kwargs)
+        self.n_dropout = n_dropout
+        assert self.n_dropout < 3 and isinstance(self.n_dropout, int)
 
         self.conv1 = PadNormConv2D(64, kernel_size=7, strides=2, activation=tf.nn.relu, padding='valid', epsilon=epsilon)
         self.pool1 = MaxPooling2D(pool_size=3, strides=2, padding='valid')
+        self.dropout1 = Dropout(.5)
         self.dtgroup = DenseTransitionBlockGroup2D(growth_rate, blocks[:-1], reduction, epsilon=epsilon)
+        self.dropout2 = Dropout(.5)
         self.dblock2 = DenseBlock2D(growth_rate, blocks[-1], epsilon=epsilon)
         self.norm2 = NormalizationActivation(activation=tf.nn.relu, epsilon=epsilon)
 
@@ -50,10 +54,14 @@ class DenseNet(BaseModel, Registry):
 
         self.flatten = Flatten()
 
-    def call(self, inputs, *args, **kwargs):
+    def call(self, inputs, training=False, *args, **kwargs):
         x = self.conv1(inputs)
         x = self.pool1(x)
+        if training and self.n_dropout >= 1:
+            x = self.dropout1(x, training)
         x = self.dtgroup(x)
+        if training and self.n_dropout >= 2:
+            x = self.dropout2(x, training)
         x = self.dblock2(x)
         x = self.norm2(x)
         if self.pool:
