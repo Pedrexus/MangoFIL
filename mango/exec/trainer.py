@@ -144,6 +144,7 @@ class Trainer:
             # ------------ ENCODING ------------ #
             # tensorflow F1Score demands one-hot encoding
             y_train = one_hot_encode(y_train.reshape(-1, 1))
+            y_valid = one_hot_encode(y_valid.reshape(-1, 1))
             y_test = one_hot_encode(y_test.reshape(-1, 1))
 
             # ------------- MODEL -------------- #
