@@ -50,12 +50,20 @@ class Trainer:
     def splitting(self, *args, **kwargs):
         x, y = self.preprocessing(*args, **kwargs)
 
-        x, x_test, y, y_test = train_test_split(
-            x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
-        )
-        x_train, x_valid, y_train, y_valid = train_test_split(
-            x, y, stratify=y, test_size=self.validation_size, random_state=self.random_state
-        )
+        if self.test_size:
+            x, x_test, y, y_test = train_test_split(
+                x, y, stratify=y, test_size=self.test_size, random_state=self.random_state
+            )
+        else:
+            x_test, y_test = None, None
+
+        if self.validation_size:
+            x_train, x_valid, y_train, y_valid = train_test_split(
+                x, y, stratify=y, test_size=self.validation_size, random_state=self.random_state
+            )
+        else:
+            x_train, y_train = x, y
+            x_valid, y_valid = None, None
 
         return x_train, y_train, x_valid, y_valid, x_test, y_test
 
@@ -137,9 +145,12 @@ class Trainer:
             x_train, x_test = x[train_index], x[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            x_train, x_valid, y_train, y_valid = train_test_split(
-                x_train, y_train, stratify=y_train, test_size=self.validation_size, random_state=self.random_state
-            )
+            if self.validation_size:
+                x_train, x_valid, y_train, y_valid = train_test_split(
+                    x_train, y_train, stratify=y_train, test_size=self.validation_size, random_state=self.random_state
+                )
+            else:
+                x_valid, y_valid = None, None
 
             # ------------ ENCODING ------------ #
             # tensorflow F1Score demands one-hot encoding
