@@ -96,6 +96,7 @@ class Trainer:
         if self.db:
             document = self.make_train_document(loss, optimizer, result, augmentation)
             self.db.insert('mango-train', document)
+
         return result
 
     def make_train_document(self, loss, optimizer, result, augmentation):
@@ -136,6 +137,10 @@ class Trainer:
             x_train, x_test = x[train_index], x[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
+            x_train, x_valid, y_train, y_valid = train_test_split(
+                x_train, y_train, stratify=y_train, test_size=self.validation_size, random_state=self.random_state
+            )
+
             # ------------ ENCODING ------------ #
             # tensorflow F1Score demands one-hot encoding
             y_train = one_hot_encode(y_train.reshape(-1, 1))
@@ -147,7 +152,7 @@ class Trainer:
 
             # ----------- TRAINING ------------- #
             if augmentation:
-                train_gen, train_aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train)
+                train_gen, train_aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train, x_valid, y_valid)
                 result = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
             else:
                 result = model.fit(x_train, y_train, *args, **kwargs)

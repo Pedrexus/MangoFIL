@@ -15,6 +15,9 @@ Data Visualization:
         - compare same resolution
         - compare same aug params
         - compare same k-fold splits
+        - compare qualitatively: train set x test set
+            - images it does not get
+            - images it gets
         
 Final chars:
     - 5 folds
