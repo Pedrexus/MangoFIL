@@ -32,18 +32,18 @@ class LeNet5(BaseModel, Registry):
         x = self.conv1(inputs)
         x = self.pool1(x)
         if training:
-            x = self.dropout[3](x, training)
+            x = self.dropout(3, x, training)
         x = self.conv2(x)
         x = self.pool2(x)
         if training:
-            x = self.dropout[2](x, training)
+            x = self.dropout(2, x, training)
         x = self.flatten(x)
         x = self.dense1(x)
         if training:
-            x = self.dropout[1](x, training)
+            x = self.dropout(1, x, training)
         x = self.dense2(x)
         if training:
-            x = self.dropout[0](x, training)
+            x = self.dropout(0, x, training)
         x = self.out(x)
         return x
 
