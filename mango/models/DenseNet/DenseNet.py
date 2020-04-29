@@ -34,8 +34,7 @@ class DenseNet(BaseModel, Registry):
             - `max` - global max pooling will is applied before dense softmax.
         """
         super().__init__(n_classes, input_shape, *args, **kwargs)
-        self.n_dropout = n_dropout
-        assert self.n_dropout < 3 and isinstance(self.n_dropout, int)
+
 
         self.conv1 = PadNormConv2D(64, kernel_size=7, strides=2, activation=tf.nn.relu, padding='valid', epsilon=epsilon)
         self.pool1 = MaxPooling2D(pool_size=3, strides=2, padding='valid')

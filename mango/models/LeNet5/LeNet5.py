@@ -1,3 +1,5 @@
+import numbers
+
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, AveragePooling2D, Dense, Flatten
 
@@ -26,14 +28,18 @@ class LeNet5(BaseModel, Registry):
         self.dense1 = Dense(120, activation=tf.nn.tanh)
         self.dense2 = Dense(84, activation=tf.nn.tanh)
 
-    def call(self, inputs, *args, **kwargs):
+    def call(self, inputs, training=False, *args, **kwargs):
         x = self.conv1(inputs)
         x = self.pool1(x)
+        x = self.dropout(3)(x, training)
         x = self.conv2(x)
         x = self.pool2(x)
+        x = self.dropout(2)(x, training)
         x = self.flatten(x)
         x = self.dense1(x)
+        x = self.dropout(1)(x, training)
         x = self.dense2(x)
+        x = self.dropout(0)(x, training)
         x = self.out(x)
         return x
 

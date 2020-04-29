@@ -1,17 +1,18 @@
 from functools import lru_cache
 from math import log2, log10, sqrt
+from numbers import Integral
 
 import tensorflow as tf
 from numpy import prod
 from tensorflow.keras import Model
-from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.layers import Input, Dense, Dropout
 
 
 class BaseModel(Model):
     N_CLASSES = None
     INPUT_SHAPE = ()
 
-    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, *args, **kwargs):
+    def __init__(self, n_classes=N_CLASSES, input_shape=INPUT_SHAPE, n_dropout=0, *args, **kwargs):
         """base keras model for easy using of summary
 
         :param n_classes: number of distinct classes
@@ -19,9 +20,13 @@ class BaseModel(Model):
         """
         super().__init__(*args, **kwargs)
 
+        assert isinstance(self.n_dropout, Integral)
+        self.n_dropout = n_dropout
+
         self._n_classes, self._input_shape = n_classes, input_shape
         self._ = dict(input_shape=input_shape, data_format='channels_last')
 
+        self.__dropout = [Dropout(.5) for _ in range(self.n_dropout)]
         self.out = Dense(n_classes, activation=tf.nn.softmax)
 
     def define_params(self):
@@ -77,3 +82,9 @@ class BaseModel(Model):
 
     def summary(self, *args, **kwargs):
         return self.model().summary(*args, **kwargs)
+
+    def dropout(self, n):
+        if self.n_dropout >= n + 1:
+            return self.__dropout[n]
+        else:
+            return lambda x, *_: x
