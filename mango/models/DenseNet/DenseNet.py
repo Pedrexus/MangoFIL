@@ -38,9 +38,7 @@ class DenseNet(BaseModel, Registry):
 
         self.conv1 = PadNormConv2D(64, kernel_size=7, strides=2, activation=tf.nn.relu, padding='valid', epsilon=epsilon)
         self.pool1 = MaxPooling2D(pool_size=3, strides=2, padding='valid')
-        self.dropout1 = Dropout(.5)
         self.dtgroup = DenseTransitionBlockGroup2D(growth_rate, blocks[:-1], reduction, epsilon=epsilon)
-        self.dropout2 = Dropout(.5)
         self.dblock2 = DenseBlock2D(growth_rate, blocks[-1], epsilon=epsilon)
         self.norm2 = NormalizationActivation(activation=tf.nn.relu, epsilon=epsilon)
 

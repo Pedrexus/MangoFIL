@@ -31,15 +31,19 @@ class LeNet5(BaseModel, Registry):
     def call(self, inputs, training=False, *args, **kwargs):
         x = self.conv1(inputs)
         x = self.pool1(x)
-        x = self.dropout(3)(x, training)
+        if training:
+            x = self.dropout[3](x, training)
         x = self.conv2(x)
         x = self.pool2(x)
-        x = self.dropout(2)(x, training)
+        if training:
+            x = self.dropout[2](x, training)
         x = self.flatten(x)
         x = self.dense1(x)
-        x = self.dropout(1)(x, training)
+        if training:
+            x = self.dropout[1](x, training)
         x = self.dense2(x)
-        x = self.dropout(0)(x, training)
+        if training:
+            x = self.dropout[0](x, training)
         x = self.out(x)
         return x
 

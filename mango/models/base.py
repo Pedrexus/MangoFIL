@@ -26,7 +26,7 @@ class BaseModel(Model):
         self._n_classes, self._input_shape = n_classes, input_shape
         self._ = dict(input_shape=input_shape, data_format='channels_last')
 
-        self.__dropout = [Dropout(.5) for _ in range(self.n_dropout)]
+        self.dropout = [Dropout(.5) for _ in range(self.n_dropout)]
         self.out = Dense(n_classes, activation=tf.nn.softmax)
 
     def define_params(self):
@@ -82,9 +82,3 @@ class BaseModel(Model):
 
     def summary(self, *args, **kwargs):
         return self.model().summary(*args, **kwargs)
-
-    def dropout(self, n):
-        if self.n_dropout >= n + 1:
-            return self.__dropout[n]
-        else:
-            return lambda x, *_: x
