@@ -20,7 +20,7 @@ class BaseModel(Model):
         """
         super().__init__(*args, **kwargs)
 
-        assert isinstance(self.n_dropout, Integral)
+        assert isinstance(n_dropout, Integral)
         self.n_dropout = n_dropout
 
         self._n_classes, self._input_shape = n_classes, input_shape
