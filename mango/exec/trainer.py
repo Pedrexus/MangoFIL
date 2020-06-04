@@ -77,9 +77,8 @@ class Trainer:
         batch_size = augmentation.pop("batch_size", 32)
         n_images = augmentation.pop("n_images", len(x_train) * 2)
 
-        # number of images = batch_size * steps_per_epoch (per epoch)
-        steps_per_epoch = max(floor(n_images / batch_size),
-                              floor(len(x_train) / batch_size), 1)
+        # number of images = batch_size * steps_per_epoch (per epoch), floor(n_images / batch_size),
+        steps_per_epoch = max(floor(len(x_train) / batch_size), 1)
 
         aug = ImageDataGenerator(**augmentation)
         train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
