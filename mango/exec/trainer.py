@@ -6,6 +6,7 @@ from numpy import array, unique, mean, std, argmax, absolute
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tqdm import tqdm
+from math import floor
 
 from ..helpers import one_hot_encode
 
@@ -77,7 +78,8 @@ class Trainer:
         n_images = augmentation.pop("n_images", len(x_train) * 2)
 
         # number of images = batch_size * steps_per_epoch (per epoch)
-        steps_per_epoch = max(n_images // batch_size, len(x_train) // batch_size, 1)
+        steps_per_epoch = max(floor(n_images / batch_size),
+                              floor(len(x_train) / batch_size), 1)
 
         aug = ImageDataGenerator(**augmentation)
         train_gen = aug.flow(x_train, y_train, batch_size=batch_size)
@@ -90,25 +92,30 @@ class Trainer:
         return train_gen, dict(steps_per_epoch=steps_per_epoch)
 
     def train(self, loss, metrics, optimizer: tf.keras.optimizers.Optimizer, augmentation, *args, **kwargs):
-        x_train, y_train, x_valid, y_valid, x_test, y_test = self.splitting(one_hot=True)
+        x_train, y_train, x_valid, y_valid, x_test, y_test = self.splitting(
+            one_hot=True)
 
         model = self.__model()
         model.compile(loss=loss, metrics=metrics, optimizer=optimizer)
 
         if augmentation:
-            train_gen, aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train, x_valid, y_valid)
+            train_gen, aug_kwargs = self.__data_augmentation(
+                augmentation, x_train, y_train, x_valid, y_valid)
             result = model.fit(train_gen, *args, **aug_kwargs, **kwargs)
         else:
-            result = model.fit(x_train, y_train, *args, validation_data=(x_valid, y_valid), **kwargs)
+            result = model.fit(x_train, y_train, *args,
+                               validation_data=(x_valid, y_valid), **kwargs)
 
         if self.db:
-            document = self.make_train_document(loss, optimizer, result, augmentation)
+            document = self.make_train_document(
+                loss, optimizer, result, augmentation)
             self.db.insert('mango-train', document)
 
         return result
 
     def make_train_document(self, loss, optimizer, result, augmentation):
-        best_epoch = argmax(absolute(result.history['val_f1_score']))  # loss is negative
+        # loss is negative
+        best_epoch = argmax(absolute(result.history['val_f1_score']))
         t_f1 = result.history['f1_score'][best_epoch]
         v_f1 = result.history['val_f1_score'][best_epoch]
 
@@ -164,8 +171,10 @@ class Trainer:
 
             # ----------- TRAINING ------------- #
             if augmentation:
-                train_gen, train_aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train, x_valid, y_valid)
-                result = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
+                train_gen, train_aug_kwargs = self.__data_augmentation(
+                    augmentation, x_train, y_train, x_valid, y_valid)
+                result = model.fit(train_gen, *args, **
+                                   train_aug_kwargs, **kwargs)
             else:
                 result = model.fit(x_train, y_train, *args, **kwargs)
 
@@ -173,15 +182,18 @@ class Trainer:
             verbose = kwargs.get('verbose', 0)
             verbose = 1 if verbose == 2 else verbose
             if augmentation:
-                test_gen, test_aug_kwargs = self.__data_augmentation(augmentation, x_test, y_test)
-                evaluation = model.evaluate(test_gen, verbose=verbose, steps=test_aug_kwargs['steps_per_epoch'])
+                test_gen, test_aug_kwargs = self.__data_augmentation(
+                    augmentation, x_test, y_test)
+                evaluation = model.evaluate(
+                    test_gen, verbose=verbose, steps=test_aug_kwargs['steps_per_epoch'])
             else:
                 evaluation = model.evaluate(x_test, y_test, verbose=verbose)
 
             all_results.append([result.history, evaluation])
 
         if self.db:
-            document = self.make_cv_document(n_splits, loss, optimizer, augmentation, all_results)
+            document = self.make_cv_document(
+                n_splits, loss, optimizer, augmentation, all_results)
             self.db.insert('mango-cv', document)
         return all_results
 
