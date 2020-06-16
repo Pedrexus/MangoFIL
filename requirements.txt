@@ -1,5 +1,7 @@
 numpy
 pandas
+xlrd
+pyarrow
 matplotlib
 dask[complete]
 pillow
