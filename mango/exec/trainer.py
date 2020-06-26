@@ -178,8 +178,8 @@ class Trainer:
                     x_train_aug, y_train_aug = augmentation(x_train, y_train)
                     if y_valid is not None:
                         x_valid_aug, y_valid_aug = augmentation(x_valid, y_valid)
-                        validation_steps = floor(len(x_train) / kwargs.get('batch_size', 32))
-                        result = model.fit(x_train_aug, y_train_aug, *args, validation_data=(x_valid_aug, y_valid_aug), validation_steps = validation_steps, **kwargs)
+                        # validation_steps = floor(len(x_train) / kwargs.get('batch_size', 32))
+                        result = model.fit(x_train_aug, y_train_aug, *args, validation_data=(x_valid_aug, y_valid_aug), **kwargs)
                     else:
                         result = model.fit(x_train_aug, y_train_aug, *args, **kwargs)
                 else:
