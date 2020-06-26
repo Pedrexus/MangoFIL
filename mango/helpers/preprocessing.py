@@ -38,5 +38,5 @@ def spectra_data_augmentation(arr, labels, n: int, *args, **kwargs):
         label = [labels[i]] * n
         relabeled = [*relabeled, *label]
 
-    return pd.concat(result, axis=1).T.reset_index(drop=True), np.array(relabeled)
+    return pd.concat(result, axis=1).T.reset_index(drop=True).values, np.array(relabeled)
 
