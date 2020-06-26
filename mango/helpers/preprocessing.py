@@ -28,8 +28,8 @@ def spectra_data_augmentation(arr, labels, n: int, *args, **kwargs):
         new_graph = interpolate(graph)
 
         splits = defaultdict(list)
-        for i, v in enumerate(new_graph):
-            splits[i % n].append(v)
+        for j, v in enumerate(new_graph):
+            splits[j % n].append(v)
 
         result.append(
             pd.DataFrame(splits)
