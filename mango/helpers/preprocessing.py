@@ -34,5 +34,5 @@ def spectra_data_augmentation(arr, n: int, *args, **kwargs):
             pd.DataFrame(splits)
         )
 
-    return result
+    return pd.concat(result, axis=1).T.reset_index(drop=True)
 
