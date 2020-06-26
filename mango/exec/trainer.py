@@ -160,9 +160,10 @@ class Trainer:
 
             # ------------ ENCODING ------------ #
             # tensorflow F1Score demands one-hot encoding
-            y_train = one_hot_encode(y_train.reshape(-1, 1))
-            y_valid = one_hot_encode(y_valid.reshape(-1, 1))
-            y_test = one_hot_encode(y_test.reshape(-1, 1))
+            if x_valid and y_valid:
+                y_train = one_hot_encode(y_train.reshape(-1, 1))
+                y_valid = one_hot_encode(y_valid.reshape(-1, 1))
+                y_test = one_hot_encode(y_test.reshape(-1, 1))
 
             # ------------- MODEL -------------- #
             model = self.__model()
@@ -170,10 +171,16 @@ class Trainer:
 
             # ----------- TRAINING ------------- #
             if augmentation:
-                train_gen, train_aug_kwargs = self.__data_augmentation(
-                    augmentation, x_train, y_train, x_valid, y_valid)
-                result = model.fit(train_gen, *args, **
-                                   train_aug_kwargs, **kwargs)
+                if isinstance(augmentation, dict):
+                    train_gen, train_aug_kwargs = self.__data_augmentation(
+                        augmentation, x_train, y_train, x_valid, y_valid)
+                    result = model.fit(train_gen, *args, **
+                                    train_aug_kwargs, **kwargs)
+                elif callable(augmentation):
+                    x_train_aug, y_train_aug = augmentation(x_train, y_train)
+                    result = model.fit(x_train_aug, y_train_aug, *args, **kwargs)
+                else:
+                    raise ValueError(f"augmentation of type {type(augmentation)} is not valid.")
             else:
                 result = model.fit(x_train, y_train, *args, **kwargs)
 
