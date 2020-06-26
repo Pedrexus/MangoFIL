@@ -12,7 +12,7 @@ def one_hot_encode(arr):
     enc.fit(arr)
     return enc.transform(arr).toarray()
 
-def spectra_data_augmentation(arr, n: int, *args, **kwargs):
+def spectra_data_augmentation(arr, labels, n: int, *args, **kwargs):
     l = arr.shape[1]  # graph length
 
     x = np.linspace(0, 1, num=l, endpoint=True)
@@ -23,7 +23,8 @@ def spectra_data_augmentation(arr, n: int, *args, **kwargs):
         return f(new_x)
     
     result = []
-    for graph in arr:
+    relabeled = []
+    for i, graph in enumerate(arr):
         new_graph = interpolate(graph)
 
         splits = defaultdict(list)
@@ -33,6 +34,9 @@ def spectra_data_augmentation(arr, n: int, *args, **kwargs):
         result.append(
             pd.DataFrame(splits)
         )
+        
+        label = [labels[i]] * n
+        relabeled = [*relabeled, *label]
 
-    return pd.concat(result, axis=1).T.reset_index(drop=True)
+    return pd.concat(result, axis=1).T.reset_index(drop=True), np.array(relabeled)
 
