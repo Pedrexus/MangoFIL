@@ -176,7 +176,11 @@ class Trainer:
                     result = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
                 elif callable(augmentation):
                     x_train_aug, y_train_aug = augmentation(x_train, y_train)
-                    result = model.fit(x_train_aug, y_train_aug, *args, **kwargs)
+                    if y_valid is not None:
+                        x_valid_aug, y_valid_aug = augmentation(x_valid, y_valid)
+                        result = model.fit(x_train_aug, y_train_aug, validation_data=(x_valid_aug, y_valid_aug),  *args, **kwargs)
+                    else:
+                        result = model.fit(x_train_aug, y_train_aug, *args, **kwargs)
                 else:
                     raise ValueError(f"augmentation of type {type(augmentation)} is not valid.")
             else:
