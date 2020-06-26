@@ -172,10 +172,8 @@ class Trainer:
             # ----------- TRAINING ------------- #
             if augmentation:
                 if isinstance(augmentation, dict):
-                    train_gen, train_aug_kwargs = self.__data_augmentation(
-                        augmentation, x_train, y_train, x_valid, y_valid)
-                    result = model.fit(train_gen, *args, **
-                                    train_aug_kwargs, **kwargs)
+                    train_gen, train_aug_kwargs = self.__data_augmentation(augmentation, x_train, y_train, x_valid, y_valid)
+                    result = model.fit(train_gen, *args, **train_aug_kwargs, **kwargs)
                 elif callable(augmentation):
                     x_train_aug, y_train_aug = augmentation(x_train, y_train)
                     result = model.fit(x_train_aug, y_train_aug, *args, **kwargs)
@@ -186,14 +184,7 @@ class Trainer:
 
             # ----------- EVALUATION ----------- #
             verbose = kwargs.get('verbose', 0)
-            verbose = 1 if verbose == 2 else verbose
-            if augmentation:
-                test_gen, test_aug_kwargs = self.__data_augmentation(
-                    augmentation, x_test, y_test)
-                evaluation = model.evaluate(
-                    test_gen, verbose=verbose, steps=test_aug_kwargs['steps_per_epoch'])
-            else:
-                evaluation = model.evaluate(x_test, y_test, verbose=verbose)
+            evaluation = model.evaluate(x_test, y_test, verbose=1 if verbose == 2 else verbose)
 
             all_results.append([result.history, evaluation])
 
